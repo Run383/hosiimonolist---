@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0a0a0f" />
+  <meta name="description" content="衝動買いを防ぐ欲しいものリスト管理アプリ" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="icon" href="/icon-192.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/icon-192.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <title>ほしいものリスト</title>
+  <script type="module" crossorigin src="/assets/index-3XR7lBgd.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-DlezpJ-K.css">
+</head>
+
+<body>
+  <!-- ============ ログイン画面 ============ -->
+  <div id="login-screen" class="screen">
+    <div class="login-container">
+      <div class="login-icon">🛒</div>
+      <h1 class="login-title">ほしいものリスト</h1>
+      <p class="login-subtitle">衝動買いを防いで、賢くお買い物。</p>
+      <button id="btn-google-login" class="btn btn-login" type="button">
+        <svg width="20" height="20" viewBox="0 0 48 48">
+          <path fill="#EA4335"
+            d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+          <path fill="#4285F4"
+            d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+          <path fill="#FBBC05"
+            d="M10.53 28.59a14.5 14.5 0 0 1 0-9.18l-7.98-6.19a24.042 24.042 0 0 0 0 21.56l7.98-6.19z" />
+          <path fill="#34A853"
+            d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+        </svg>
+        Google でログイン
+      </button>
+      <button id="btn-demo-mode" class="btn btn-demo" type="button">
+        デモモードで試す
+      </button>
+    </div>
+  </div>
+
+  <!-- ============ メイン画面 ============ -->
+  <div id="main-screen" class="screen hidden">
+    <!-- ヘッダー -->
+    <header class="app-header">
+      <div class="header-left">
+        <h1 class="app-title">🛒 ほしいものリスト</h1>
+      </div>
+      <div class="header-right">
+        <button id="btn-ai-settings" class="btn-icon" title="AI設定" type="button">🤖</button>
+        <button id="btn-theme-toggle" class="btn-icon" title="テーマ切替" type="button">🌙</button>
+        <div class="user-info">
+          <img id="user-avatar" class="avatar" src="" alt="avatar" />
+          <button id="btn-logout" class="btn btn-sm btn-outline" type="button">ログアウト</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- フィルタータブ -->
+    <div class="filter-bar">
+      <button class="filter-tab active" data-filter="all">すべて</button>
+      <button class="filter-tab" data-filter="wanted">欲しい</button>
+      <button class="filter-tab" data-filter="bought">購入済み</button>
+      <button class="filter-tab" data-filter="removed">不要</button>
+      <div class="filter-separator"></div>
+      <button class="filter-tab" data-filter="star-5">⭐️ 5</button>
+      <button class="filter-tab" data-filter="star-4">⭐️ 4</button>
+      <button class="filter-tab" data-filter="star-3">⭐️ 3</button>
+      <button class="filter-tab" data-filter="star-2">⭐️ 2</button>
+      <button class="filter-tab" data-filter="star-1">⭐️ 1</button>
+    </div>
+
+    <!-- フォルダバー -->
+    <div class="folder-bar" id="folder-bar">
+      <div class="folder-tabs" id="folder-tabs">
+        <button class="folder-tab active" data-folder="all">📁 すべて</button>
+        <!-- 動的に生成 -->
+      </div>
+      <button id="btn-add-folder" class="btn-icon folder-add-btn" title="フォルダを作成" type="button">➕</button>
+      <button id="btn-manage-folders" class="btn-icon folder-manage-btn" title="フォルダ管理" type="button">⚙️</button>
+    </div>
+
+    <!-- 商品追加ボタン（FAB） -->
+    <button id="btn-open-form" class="fab" type="button" title="商品を追加">
+      <span>＋</span>
+    </button>
+
+    <!-- 商品追加モーダル -->
+    <div id="modal-overlay" class="modal-overlay hidden">
+      <div class="modal">
+        <div class="modal-header">
+          <h2 id="modal-title">商品を追加</h2>
+          <button id="btn-close-modal" class="btn-icon" type="button">✕</button>
+        </div>
+        <form id="add-form" class="add-form">
+          <!-- Step 1: URL Input -->
+          <div id="step-url" class="form-step">
+            <div class="form-group">
+              <label for="input-url-search">Amazonの商品URL</label>
+              <div class="input-group">
+                <input type="url" id="input-url-search" placeholder="https://www.amazon.co.jp/dp/..." />
+                <button type="button" id="btn-analyze" class="btn btn-secondary">自動取得</button>
+              </div>
+              <p class="hint-text">URLを入力すると商品情報を自動で取得します。<br>手動で入力する場合は「スキップ」を押してください。</p>
+            </div>
+            <button type="button" id="btn-skip-analyze" class="btn btn-outline btn-full">手動で入力する</button>
+          </div>
+
+          <!-- Step 2: Details (Hidden initially) -->
+          <div id="step-details" class="form-step hidden">
+            <div id="preview-area" class="preview-area hidden">
+              <img id="preview-image" src="" alt="Preview" />
+              <div class="preview-info">
+                <div id="preview-title" class="preview-title"></div>
+                <div id="preview-price" class="preview-price"></div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="input-title">商品名 <span class="required">*</span></label>
+              <input type="text" id="input-title" required />
+            </div>
+            <div class="form-group">
+              <label for="input-price">価格（円）<span class="required">*</span></label>
+              <input type="number" id="input-price" min="0" required />
+            </div>
+            <!-- Hidden fields for data storage -->
+            <input type="hidden" id="input-image" />
+            <input type="hidden" id="input-url" />
+            <input type="hidden" id="input-original-price" />
+            <input type="hidden" id="edit-mode-id" /> <!-- 編集モード時のID -->
+
+            <div class="form-group">
+              <label for="input-folder">フォルダ</label>
+              <select id="input-folder">
+                <option value="">未分類</option>
+                <!-- 動的に生成 -->
+              </select>
+            </div>
+
+            <div class="form-actions">
+              <button type="button" id="btn-back-step" class="btn btn-outline">戻る</button>
+              <button type="submit" class="btn btn-primary btn-full">保存する</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- 商品一覧 -->
+    <main class="items-grid" id="items-grid">
+      <!-- 動的に生成 -->
+    </main>
+
+    <!-- 空状態 -->
+    <div id="empty-state" class="empty-state hidden">
+      <div class="empty-icon">📦</div>
+      <p>まだ商品がありません</p>
+      <p class="empty-hint">右下の ＋ ボタンから追加してみましょう</p>
+    </div>
+  </div>
+
+</body>
+
+</html>
